@@ -1,3 +1,5 @@
+use crate::http::{request, Request};
+use std::convert::TryFrom;
 use std::io::Read;
 use std::net::TcpListener;
 pub struct Server {
@@ -25,7 +27,12 @@ impl Server {
                     let mut buffer = [0; 1024];
                     match stream.read(&mut buffer) {
                         Ok(_) => {
-                            println!("Recived a request: {}", String::from_utf8_lossy(&buffer))
+                            println!("Recived a request: {}", String::from_utf8_lossy(&buffer));
+                            // normally it converts but here we explicitly convert to byte slice by using ..
+                            match Request::try_from(&buffer[..]) {
+                                Ok((request)) => {}
+                                Err(e) => println!(),
+                            }
                         }
                         Err(e) => println!("Failed to read from connection: {}", e),
                     }
